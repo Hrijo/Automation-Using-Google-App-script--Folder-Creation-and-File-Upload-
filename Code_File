@@ -1,0 +1,160 @@
+/*
+This script is designed to create Google Folders from data within a Google Sheet
+and copy the files submitted by the student to the appropriate folders
+** A copy of the original file will be available in the form responses folder
+*/
+
+function Cryptic_Magic() {
+  Logger.log('Script Execution Started');
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  var live_folder_creation_sheet = ss.getSheetByName('Live Folder Creation');
+
+  // Get the destination folder // 
+  var destination_folderID = live_folder_creation_sheet.getRange(2,12).getValue();
+  Logger.log('Destination Folder ID: ' + destination_folderID);
+
+  data = live_folder_creation_sheet.getDataRange().getValues();
+  
+  var spreadsheetData = {ss:ss,live_folder_creation_sheet:live_folder_creation_sheet,data:data, destination_folderID:destination_folderID}; 
+  var createFoldersFlag = createFolders(spreadsheetData);
+
+  if (createFoldersFlag) {
+    ss.toast('Script Completed Successfully');
+    Logger.log('Script Completed Successfully');
+
+  }
+  else{
+    //ss.toast('Script Ran with Errors');
+    //Logger.log('Script Ran with Errors');
+  }
+
+}
+
+
+
+function createFolders(spreadsheetData){
+  var ss = spreadsheetData['ss'];
+  var live_folder_creation_sheet = spreadsheetData['live_folder_creation_sheet'];
+  var data = spreadsheetData['data'];
+  var destination_folderID = spreadsheetData['destination_folderID'];
+  //var folderexist = 1
+  
+
+  var lastRow = live_folder_creation_sheet.getLastRow();
+  for (var i = 1; i< lastRow ; i++){
+    var FirstName = data[i][2];
+    Logger.log('first Name is: ' + FirstName);
+    
+    var SecondName = data[i][3];
+    Logger.log('Second is: ' + SecondName);
+    
+    var ProgramName = data[i][4];
+    Logger.log('Program Name is: ' + ProgramName);
+    
+    var LocationName = data[i][5];
+    Logger.log('location Name is: ' + LocationName);
+    
+    var Batch = data[i][6];
+    Logger.log('Batch is: ' + Batch);
+    
+    var SemesterName = data[i][7];
+    Logger.log('Semester is: ' + SemesterName);
+
+    var subjectName = data[i][8];
+    Logger.log('Subject Name is: ' + subjectName);
+
+    var AssignmentNumber = data[i][9];
+    Logger.log('Assignment is: ' + AssignmentNumber); 
+
+    var assignmentID1 = data[i][12]
+    var assignmentID2 = data[i][13]
+    var assignmentID3 = data[i][14]
+    var assignmentID4 = data[i][15]
+    var assignmentID5 = data[i][16]
+    var assignmentID6 = data[i][17]
+    var assignmentID7 = data[i][18]
+    var assignmentID8 = data[i][19]
+    var assignmentID9 = data[i][20]
+    var assignmentID10 = data[i][21]
+
+    var array_1 = [assignmentID1, assignmentID2, assignmentID3, assignmentID4, assignmentID5, assignmentID6, assignmentID7, assignmentID8, assignmentID9, assignmentID10]
+    Logger.log('Array exist: ' + array_1);
+
+    var folderexist = 1 
+
+    Utilities.sleep(3000);
+
+    if (folderexist == 1) {
+      var folderName = FirstName + '_' + SecondName + '_' + '(' + subjectName + ')'+ '_' + AssignmentNumber
+      Logger.log('Folder Name is: ' + folderName);
+      ss.toast('Creating Folder');
+      //var folderid = folderName.getFolderId()
+
+      var createfolderinit = createFolder(folderName, destination_folderID, LocationName, Batch, subjectName, SemesterName, AssignmentNumber, array_1,folderName);      
+    } 
+  }
+}
+
+
+function createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname){
+  var destination_folder = DriveApp.getFolderById(destination_folderID);
+  var desURL = destination_folder.getUrl();
+  
+  Logger.log('Destination Folder Url: ' + desURL)
+
+  if(destination_folder) {
+    var locationNameFolders = destination_folder.getFolders();
+    Utilities.sleep(3000);
+    while (locationNameFolders.hasNext()){
+      var locationNames = locationNameFolders.next();
+      Logger.log('Location Names: ' + locationNames);
+
+      if(locationNames == locationName){
+        var locationfolders = locationNames.getFolders();
+        
+        while (locationfolders.hasNext()){
+          var batchnamefolders = locationfolders.next();
+          Logger.log('Batch: ' + batchnamefolders);
+
+          if(batchnamefolders == Batch){
+            var semesterfolders = batchnamefolders.getFolders();
+            while (semesterfolders.hasNext()){
+              var semesters = semesterfolders.next()
+              Logger.log('Semesters: ' + semesters)
+
+              if(semesters == SemesterName){
+                var subjectfolders = semesters.getFolders();
+                while (subjectfolders.hasNext()){
+                  var subjects = subjectfolders.next()
+                  Logger.log('Subject Names: ' + subjects)
+
+                  if(subjects == subjectName){
+                    var assignmentfolders = subjects.getFolders();
+                    while (assignmentfolders.hasNext()){
+                      var assignments = assignmentfolders.next()
+                      Logger.log('Assignments: ' + assignments);
+
+                      if(assignments == AssignmentNumber){
+                      var newfoldercreate = assignments.createFolder(folderName);
+
+                      for (var i in array_1){                        
+                        Logger.log('CurrentFiles ' + array_1[i]);
+                        file_name_check = DriveApp.getFileById(array_1[i]);
+                        file_copy = file_name_check.makeCopy();
+                        file_copy.moveTo(newfoldercreate);
+                        }
+                      }
+                      
+                    }
+                  }
+                }
+              }
+            }
+          }     
+        }
+      }
+    }
+  }    
+}
+
