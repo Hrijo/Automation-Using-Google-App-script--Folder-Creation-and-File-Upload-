@@ -97,6 +97,7 @@ function createFolders(spreadsheetData){
 }
 
 
+
 function createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname){
   var destination_folder = DriveApp.getFolderById(destination_folderID);
   var desURL = destination_folder.getUrl();
@@ -136,19 +137,47 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
                       Logger.log('Assignments: ' + assignments);
 
                       if(assignments == AssignmentNumber){
-                      var newfoldercreate = assignments.createFolder(folderName);
+                        var stdfolders = assignments.getFolders()
+                        while (stdfolders.hasNext()){
+                          var stdassignments = stdfolders.next()
+                          Logger.log('StdAssignment folder ID: ' + stdassignments.getId());
 
-                      for (var i in array_1){                        
-                        Logger.log('CurrentFiles ' + array_1[i]);
-                        file_name_check = DriveApp.getFileById(array_1[i]);
-                        file_copy = file_name_check.makeCopy();
-                        file_copy.moveTo(newfoldercreate);
+                          if(stdassignments == folderName){
+                            var std_ass_fID = stdassignments.getId();
+                            
+                            for (var i in array_1){  
+                              if(array_1[i].length == 0){
+                                false
+                            }
+                            else{                      
+                              Logger.log('Moving to Exisitng folder ' + array_1[i]);
+                              file_name_check = DriveApp.getFileById(array_1[i]);
+                              file_copy = file_name_check.makeCopy();
+                              file_copy.moveTo(stdassignments);
+                            }
+                          }                            
+
+                            Logger.log('STD_FID: ' + std_ass_fID); 
+                          }
+
+                            return true;
+                            }
+                            var newfoldercreate = assignments.createFolder(folderName);
+                            for (var i in array_1){  
+                              if(array_1[i].length == 0){
+                                false
+                                  }
+                            else{                      
+                              Logger.log('Creating new folder to move CurrentFiles ' + array_1[i]);
+                              file_name_check = DriveApp.getFileById(array_1[i]);
+                              file_copy = file_name_check.makeCopy();
+                              file_copy.moveTo(newfoldercreate);                        
+
+                          }
+
                         }
-                      }
-                      
-                    }
                   }
-                }
+ 
               }
             }
           }     
@@ -157,4 +186,9 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
     }
   }    
 }
+}
+}
+}
+
+
 
