@@ -149,7 +149,7 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
                               if(array_1[i].length == 0){
                                 false
                             }
-                            else{                      
+                          else{                      
                               Logger.log('Moving to Exisitng folder ' + array_1[i]);
                               file_name_check = DriveApp.getFileById(array_1[i]);
                               file_copy = file_name_check.makeCopy();
@@ -160,34 +160,31 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
                             Logger.log('STD_FID: ' + std_ass_fID); 
                           }
 
-                            return true;
+                          return true;
                             }
                             var newfoldercreate = assignments.createFolder(folderName);
                             for (var i in array_1){  
                               if(array_1[i].length == 0){
                                 false
                                   }
-                            else{                      
+                              else{                      
                               Logger.log('Creating new folder to move CurrentFiles ' + array_1[i]);
                               file_name_check = DriveApp.getFileById(array_1[i]);
                               file_copy = file_name_check.makeCopy();
                               file_copy.moveTo(newfoldercreate);                        
-
                           }
-
                         }
+                      }
+                    }
                   }
- 
+                }     
               }
             }
-          }     
-        }
+          }
+        }    
       }
     }
-  }    
-}
-}
-}
+  }
 }
 
 
