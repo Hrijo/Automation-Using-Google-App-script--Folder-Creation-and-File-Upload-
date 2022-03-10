@@ -101,12 +101,12 @@ function createFolders(spreadsheetData){
 function createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname){
   var destination_folder = DriveApp.getFolderById(destination_folderID);
   var desURL = destination_folder.getUrl();
-  
+ 
   Logger.log('Destination Folder Url: ' + desURL)
-
+  
   if(destination_folder) {
     var locationNameFolders = destination_folder.getFolders();
-    Utilities.sleep(3000);
+    Utilities.sleep(300);
     while (locationNameFolders.hasNext()){
       var locationNames = locationNameFolders.next();
       Logger.log('Location Names: ' + locationNames);
@@ -114,7 +114,7 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
       if(locationNames == locationName){
         var locationfolders = locationNames.getFolders();
         
-        while (locationfolders.hasNext()){
+         while (locationfolders.hasNext()){
           var batchnamefolders = locationfolders.next();
           Logger.log('Batch: ' + batchnamefolders);
 
@@ -146,25 +146,38 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
                             var std_ass_fID = stdassignments.getId();
                             
                             for (var i in array_1){  
-                              if(array_1[i].length == 0){
+                              if(array_1[i] == null){
                                 false
-                            }
-                          else{                      
+                              }
+                              else{                      
                               Logger.log('Moving to Exisitng folder ' + array_1[i]);
                               file_name_check = DriveApp.getFileById(array_1[i]);
                               file_copy = file_name_check.makeCopy();
                               file_copy.moveTo(stdassignments);
-                            }
-                          }                            
-
+                              }
+                            }                            
                             Logger.log('STD_FID: ' + std_ass_fID); 
+                            return;
                           }
-
-                          return true;
-                            }
+                          else{
                             var newfoldercreate = assignments.createFolder(folderName);
                             for (var i in array_1){  
-                              if(array_1[i].length == 0){
+                              if(array_1[i] == null){
+                                false
+                                  }
+                              else{                      
+                              Logger.log('Creating new folder to move CurrentFiles ' + array_1[i]);
+                              file_name_check = DriveApp.getFileById(array_1[i]);
+                              file_copy = file_name_check.makeCopy();
+                              file_copy.moveTo(newfoldercreate);                        
+                              }
+                            }
+                          }
+                        return;
+                        }
+                            var newfoldercreate = assignments.createFolder(folderName);
+                            for (var i in array_1){  
+                              if(array_1[i] == null){
                                 false
                                   }
                               else{                      
@@ -174,18 +187,54 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
                               file_copy.moveTo(newfoldercreate);                        
                           }
                         }
+                        return;
                       }
+                    return;
                     }
+                    Logger.log('Assignment folder outside while loop');
+                    assfolder = subjects.createFolder(AssignmentNumber);
+                    createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
                   }
-                }     
+                  else { 
+                    Logger.log('Assignment folder using else');
+                    assfolder = subjects.createFolder(AssignmentNumber);
+                    createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
+                  }     
+                  return;
+                }
+                Logger.log('Creating Subjects');
+                subjfolder = semesters.createFolder(subjectName)
+                createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
               }
+              else{
+                Logger.log('Executing Else Statement')
+                var newf = batchnamefolders.createFolder(SemesterName);
+                createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
+              }
+              return;
             }
+              Logger.log('Check While Loop')
+              var newf1 = batchnamefolders.createFolder(SemesterName);
+              createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
           }
-        }    
+          else{
+            var batchf = locationNames.createFolder(Batch);
+            createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
+          }
+          return;
+        }
+        var batchf = locationNames.createFolder(Batch);
+        createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
       }
+      else{
+        var locafolder = destination_folder.createFolder(locationName);
+        createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
+      }
+
+    return;
     }
+    var locafolder = destination_folder.createFolder(locationName);
+    createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
   }
 }
-
-
 
