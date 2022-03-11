@@ -236,8 +236,8 @@ function createFolder (folderName, destination_folderID,locationName,Batch, subj
           }
           return;
         }
-        //var batchf = locationNames.createFolder(Batch);
-        //createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
+        var batchf2 = locationNames.createFolder(Batch);
+        createFolder (folderName, destination_folderID,locationName,Batch, subjectName,SemesterName,AssignmentNumber, array_1,folderName,fldname);
       }
     }
   }
